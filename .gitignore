@@ -1,0 +1,21 @@
+# Environment & secrets
+.env
+
+# Raw data (too large / not ours to redistribute — link in README instead)
+data/raw/*.csv
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Power BI (binary, large — consider Git LFS if you want to version it)
+*.pbix
+
+# Jupyter
+.ipynb_checkpoints/
