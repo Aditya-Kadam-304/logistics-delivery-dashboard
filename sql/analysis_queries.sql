@@ -76,17 +76,20 @@ GROUP BY order_region, shipping_mode
 HAVING COUNT(*) > 30  -- exclude low-volume combos that would skew the score
 ORDER BY risk_score DESC;
 
--- 7. Weather correlation (once weather_log has enough history)
--- Joins on city name — adjust matching logic based on how order_city
--- values compare to your HUB_LOCATIONS keys in 02_weather_pull.py
+-- 7. Weather correlation using REAL historical weather (matched by actual
+-- order date and city — not "today's" weather, which can't be matched to
+-- historical orders). See scripts/04_geocode_top_cities.py and
+-- scripts/05_historical_weather_pull.py for how this data was generated.
+-- Only covers the top 10 highest-volume cities (by design — see script
+-- comments), so this is a sample, not a full-dataset correlation.
 SELECT
-    w.city,
-    w.condition,
-    COUNT(s.order_id) AS shipments_during_condition,
-    ROUND(100.0 * SUM(s.is_late) / COUNT(s.order_id), 1) AS late_pct
-FROM weather_log w
+    hw.weather_condition,
+    COUNT(s.order_id) AS shipments_in_condition,
+    ROUND(100.0 * SUM(s.is_late) / COUNT(s.order_id), 1) AS late_pct,
+    ROUND(AVG(s.delay_days), 2) AS avg_delay_days
+FROM historical_weather hw
 JOIN shipments s
-    ON s.order_city = w.city
-    AND DATE(s.shipping_date_dateorders) = DATE(w.pulled_at_utc)
-GROUP BY w.city, w.condition
+    ON s.order_city = hw.order_city
+    AND DATE(s.order_date_dateorders) = hw.date
+GROUP BY hw.weather_condition
 ORDER BY late_pct DESC;

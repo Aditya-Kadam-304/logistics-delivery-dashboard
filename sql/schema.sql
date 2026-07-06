@@ -32,6 +32,19 @@ CREATE TABLE IF NOT EXISTS weather_log (
     humidity_pct INTEGER
 );
 
+-- Real historical weather, matched to actual shipment dates — this is what
+-- the weather-to-delivery correlation analysis actually uses. weather_log
+-- above only captures "today," and is kept purely as a live-automation demo.
+CREATE TABLE IF NOT EXISTS historical_weather (
+    order_city VARCHAR(100),
+    date DATE,
+    precipitation_mm NUMERIC(6, 2),
+    temp_mean_c NUMERIC(5, 2),
+    weather_code INTEGER,
+    weather_condition VARCHAR(30)
+);
+
 CREATE INDEX IF NOT EXISTS idx_shipments_region ON shipments(order_region);
 CREATE INDEX IF NOT EXISTS idx_shipments_shipping_mode ON shipments(shipping_mode);
 CREATE INDEX IF NOT EXISTS idx_weather_city_time ON weather_log(city, pulled_at_utc);
+CREATE INDEX IF NOT EXISTS idx_historical_weather_city_date ON historical_weather(order_city, date);

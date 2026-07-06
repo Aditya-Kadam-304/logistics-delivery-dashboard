@@ -17,11 +17,13 @@ from db_config import get_engine
 
 SHIPMENTS_PATH = Path("data/processed/shipments_clean.csv")
 WEATHER_PATH = Path("data/processed/weather_log.csv")
+HISTORICAL_WEATHER_PATH = Path("data/processed/historical_weather.csv")
 
 # Columns that must be parsed as real datetimes, not text, before loading
 DATE_COLUMNS = {
     "shipments": ["order_date_dateorders", "shipping_date_dateorders"],
     "weather_log": ["pulled_at_utc"],
+    "historical_weather": ["date"],
 }
 
 
@@ -50,6 +52,9 @@ def main():
     load_table(SHIPMENTS_PATH, "shipments", engine, truncate_first=True)
     # Weather log grows daily — never truncate, just append new rows
     load_table(WEATHER_PATH, "weather_log", engine, truncate_first=False)
+    # Historical weather is a fixed one-time pull per city — safe to
+    # truncate and reload each time you re-run the geocode/pull scripts
+    load_table(HISTORICAL_WEATHER_PATH, "historical_weather", engine, truncate_first=True)
 
 
 if __name__ == "__main__":

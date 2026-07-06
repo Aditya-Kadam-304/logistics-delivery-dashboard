@@ -17,7 +17,21 @@ Most analytics portfolios stop at a static Kaggle dashboard. This one adds two t
 | Source | Type | Purpose |
 |---|---|---|
 | [DataCo Smart Supply Chain Dataset](https://www.kaggle.com/datasets/shashwatwork/dataco-smart-supply-chain-for-big-data-analysis) | Static, ~180K rows | Historical order/shipment/delivery records |
-| [OpenWeatherMap API](https://openweathermap.org/api) | Live, daily pull | Weather conditions for shipping hub regions |
+| [Open-Meteo Historical Weather API](https://open-meteo.com/en/docs/historical-weather-api) | Historical, matched to actual order dates | Real weather-to-delivery correlation for top 10 shipping cities |
+| [OpenWeatherMap API](https://openweathermap.org/api) | Live, daily pull via GitHub Actions | Separate live-monitoring automation demo (see note below) |
+
+**Important note on the two weather sources:** early in this project, a daily
+OpenWeatherMap pull (automated via GitHub Actions) was used with the
+intention of correlating weather with delivery delays. That doesn't
+actually work — OpenWeatherMap's free tier only returns *today's* weather,
+which can't be matched to shipments from 2015-2018. The real
+weather-to-delivery correlation instead uses **Open-Meteo's free Historical
+Weather API**, which returns real past daily weather for any date —
+correctly matched to each shipment's actual order date. The OpenWeatherMap
+automation is kept in the project as a separate, standalone demonstration
+of building an automated daily data pipeline (see
+`docs/GITHUB_ACTIONS_SETUP.md`), but it is not used in any of the delay
+analysis.
 
 ## Tech Stack
 
@@ -37,8 +51,10 @@ logistics-delivery-dashboard/
 │   └── processed/            # Cleaned data ready for DB load
 ├── scripts/
 │   ├── 01_clean_data.py      # Cleans and standardizes the Kaggle dataset
-│   ├── 02_weather_pull.py    # Pulls daily weather for hub regions (runs via GH Actions)
-│   ├── 03_load_to_postgres.py # Loads cleaned + weather data into PostgreSQL
+│   ├── 02_weather_pull.py    # Live daily pull (automation demo only — see note above)
+│   ├── 03_load_to_postgres.py # Loads all data into PostgreSQL
+│   ├── 04_geocode_top_cities.py    # Finds + geocodes top 10 shipping cities
+│   ├── 05_historical_weather_pull.py # Pulls REAL historical weather for those cities
 │   └── db_config.py          # DB connection helper (reads from .env)
 ├── sql/
 │   ├── schema.sql            # Table definitions
@@ -71,6 +87,7 @@ logistics-delivery-dashboard/
 - **Standard Class (the highest-volume tier at 107,752 orders) has the best relative on-time performance** at 39.8% late, suggesting the core fulfillment process works reasonably well when given a realistic delivery window.
 - **Highest risk combination:** Second Class shipments to Central Asia (90.6% late, risk score 70.1) — this is the top actionable target once First Class's SLA issue is separately addressed, since it reflects genuine operational delay rather than a scheduling artifact.
 - **July 2016 shows an apparent dip in late deliveries (55.2% vs. ~57-59% in surrounding months) — but this is a data collection gap, not a real improvement.** Investigating further showed every region except four US regions (US Center, East of USA, West of USA, South of USA) had zero shipments recorded that month, compared to normal volume in June and August. The apparent "improvement" is an artifact of international data being missing for that month, not a genuine operational win — a good example of not taking a promising number at face value before drawing a conclusion.
+- **Weather genuinely correlates with delivery delays, for the top 10 shipping cities analyzed.** Using real historical weather matched to actual shipment dates (see Data Sources), late rate rises consistently from Clear (54.2%) → Cloudy (56.5%) → Rain (57.9%) → Snow (69.0%). The Rain vs. Clear comparison (7,772 vs. 1,361 shipments) is statistically solid; the Snow figure is based on only 29 shipments and should be treated as a smaller, less certain signal despite the striking number.
 
 **Recommendation:** Prioritize renegotiating the First Class SLA (either extend the promised window to 2 days, or invest in genuinely faster fulfillment) before over-indexing on region-level interventions, which show far less variation.
 
@@ -88,7 +105,8 @@ cp .env.example .env
 
 # 4. Run the pipeline
 python scripts/01_clean_data.py
-python scripts/02_weather_pull.py
+python scripts/04_geocode_top_cities.py
+python scripts/05_historical_weather_pull.py
 python scripts/03_load_to_postgres.py
 ```
 

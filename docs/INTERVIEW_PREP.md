@@ -311,6 +311,62 @@ analytical process — it shows the habit of verifying a surprising result
 before trusting it, which is exactly what real analyst work requires and
 what junior candidates often skip.
 
+## A third story — catching a design flaw before it shipped
+
+Early on, the plan was to automate a daily weather pull (OpenWeatherMap)
+via GitHub Actions and correlate it with delivery delays. The automation
+worked perfectly — but a closer look revealed a logical flaw: OpenWeatherMap's
+free tier only returns *today's* weather, and the shipment data spans
+2015-2018. There's no way to correlate "today's weather" with orders from
+years ago — the dates simply don't align.
+
+The fix was switching to **Open-Meteo's free Historical Weather API**,
+which returns real past daily weather for any date — genuinely matchable
+to each shipment's actual order date. The original OpenWeatherMap
+automation was kept in the project, but reframed honestly as a standalone
+"I can build automated pipelines" demo, separate from the delay analysis
+it was originally meant to feed.
+
+**How to tell this story in an interview:**
+
+> "I originally built an automated daily weather pull to correlate with
+> delivery delays. Partway through, I realized the free weather API I was
+> using only returns current conditions, which can't be matched to
+> historical shipment dates from several years ago — the correlation I
+> wanted to build was never actually possible with that data source. I
+> switched to a historical weather API that could properly match dates,
+> and kept the original automation as a separate demonstration rather than
+> misrepresenting what it actually measures."
+
+This is a good one to have ready because it shows something interviewers
+specifically probe for: catching your own mistake before presenting
+something misleading, rather than after someone else points it out.
+
+## The weather correlation — once it was fixed, it actually worked
+
+After switching to real historical weather, the correlation query finally
+produced a genuine, defensible result: late delivery rate rises
+consistently across worsening weather conditions — Clear (54.2%) → Cloudy
+(56.5%) → Rain (57.9%) → Snow (69.0%), for the top 10 highest-volume
+shipping cities.
+
+**Talk about the sample size honestly, don't oversell it:** Rain vs. Clear
+(7,772 vs. 1,361 shipments) is a statistically solid comparison. The Snow
+figure is based on only 29 shipments — striking, but too small a sample to
+lean on heavily. A good way to phrase this in an interview:
+
+> "I found a consistent relationship between weather severity and delivery
+> delays — clear weather had the lowest late rate, and it increased through
+> cloudy, rain, and snow. The rain-versus-clear comparison is based on
+> thousands of shipments so I trust that pattern, but the snow figure only
+> had 29 shipments behind it, so I'd want more data before treating that
+> specific number as reliable."
+
+That kind of calibrated confidence — trusting a well-supported number more
+than a small-sample one — is exactly what distinguishes someone who
+understands statistics from someone who just reports whatever a query
+returns.
+
 ## Real finding from this project — and how to talk about it
 
 Once real data was loaded, the numbers surfaced something genuinely
