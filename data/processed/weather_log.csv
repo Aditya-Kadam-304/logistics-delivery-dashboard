@@ -167,3 +167,9 @@ pulled_at_utc,city,temp_c,condition,description,wind_speed_ms,humidity_pct
 2026-07-29T08:22:39.529397+00:00,Frankfurt,26.9,Clear,clear sky,2.14,44
 2026-07-29T08:22:39.938710+00:00,Rotterdam,26.36,Clouds,few clouds,2.29,64
 2026-07-29T08:22:40.345955+00:00,Singapore,30.27,Clouds,overcast clouds,5.44,77
+2026-07-30T08:09:08.090375+00:00,Los Angeles,20.81,Clear,clear sky,1.71,83
+2026-07-30T08:09:08.135632+00:00,New York,20.95,Clouds,overcast clouds,3.58,85
+2026-07-30T08:09:08.180839+00:00,Chicago,18.64,Clear,clear sky,1.58,86
+2026-07-30T08:09:08.238235+00:00,Frankfurt,29.97,Clear,clear sky,1.84,49
+2026-07-30T08:09:08.286781+00:00,Rotterdam,24.32,Clouds,broken clouds,0.89,76
+2026-07-30T08:09:08.334553+00:00,Singapore,30.27,Clouds,overcast clouds,5.16,75
