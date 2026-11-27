@@ -887,3 +887,9 @@ pulled_at_utc,city,temp_c,condition,description,wind_speed_ms,humidity_pct
 2026-11-26T16:03:21.425440+00:00,Frankfurt,1.45,Clouds,overcast clouds,4.63,76
 2026-11-26T16:03:21.502910+00:00,Rotterdam,0.06,Clouds,scattered clouds,5.14,78
 2026-11-26T16:03:21.585841+00:00,Singapore,27.75,Rain,light rain,3.09,86
+2026-11-27T15:51:43.489134+00:00,Los Angeles,20.14,Clouds,few clouds,2.06,31
+2026-11-27T15:51:43.532367+00:00,New York,13.05,Clouds,overcast clouds,8.75,74
+2026-11-27T15:51:43.586635+00:00,Chicago,4.85,Clouds,overcast clouds,6.17,73
+2026-11-27T15:51:43.641561+00:00,Frankfurt,0.37,Clear,clear sky,3.6,74
+2026-11-27T15:51:43.699279+00:00,Rotterdam,-0.31,Clouds,broken clouds,3.6,78
+2026-11-27T15:51:43.743181+00:00,Singapore,27.2,Clouds,broken clouds,1.54,87
